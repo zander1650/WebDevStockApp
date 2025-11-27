@@ -42,15 +42,15 @@ try {
 
   return (
   <div style={{ padding: "40px", fontFamily: "Arial, sans-serif", maxWidth: "600px", margin: "auto" }}>
-      <h1>Stock Price Tester</h1>
+      <h1>Stock Price testing (US MARKET)</h1>
       
       <div style={{ marginBottom: "20px" }}>
         <input
           type="text"
-          placeholder="Enter ticker (Exact)"
+          placeholder="Enter stock ticker (Exact)"
           value={ticker}
           onChange={(e) => setTicker(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && searchStock()}
+          onKeyDown={(e) => e.key === "Enter" && searchStock()}
           style={{ padding: "10px", width: "200px", fontSize: "16px",}}
         />
         <button onClick={searchStock} disabled={loading} style={{ padding: "10px 20px", marginLeft: "10px" }}>
@@ -66,7 +66,7 @@ try {
           <p><strong>Current Price:</strong> ${data.c?.toFixed(2)}</p>
           <p><strong>Change Today:</strong> 
             <span style={{ color: data.c >= data.pc ? "green" : "red" }}>
-              {" "}{data.c >= data.pc ? "↑" : "↓"} {((data.c - data.pc)/data.pc*100).toFixed(2)}%
+              {" "}{data.c >= data.pc ? "up" : "down"} {((data.c - data.pc)/data.pc*100).toFixed(2)}%
             </span>
           </p>
           <p>Previous Close: ${data.pc?.toFixed(2)}</p>
