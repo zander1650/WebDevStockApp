@@ -1,5 +1,5 @@
 "use client"
-
+// Basic start for Stock tracker, just and API call and styling as of now
 import { useState } from "react";
 import axios from "axios";
 
@@ -47,14 +47,14 @@ try {
       <div style={{ marginBottom: "20px" }}>
         <input
           type="text"
-          placeholder="Enter ticker (e.g. AAPL)"
+          placeholder="Enter ticker (Exact)"
           value={ticker}
           onChange={(e) => setTicker(e.target.value)}
           onKeyPress={(e) => e.key === "Enter" && searchStock()}
-          style={{ padding: "10px", width: "200px", fontSize: "16px" }}
+          style={{ padding: "10px", width: "200px", fontSize: "16px",}}
         />
         <button onClick={searchStock} disabled={loading} style={{ padding: "10px 20px", marginLeft: "10px" }}>
-          {loading ? "Loading..." : "Search"}
+          {loading ? "Loading" : "Search"}
         </button>
       </div>
 
@@ -71,7 +71,7 @@ try {
           </p>
           <p>Previous Close: ${data.pc?.toFixed(2)}</p>
           <p>Day High: ${data.h?.toFixed(2)} | Day Low: ${data.l?.toFixed(2)}</p>
-          <small>Data by Finnhub.io (real-time)</small>
+          <small>API Data from finnhub</small>
         </div>
       )}
     </div>
