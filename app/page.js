@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function a() {
   return (
-    <div className="min-h-screen bg-slate-900">  {/* ← This line sets the background */}
+    <div className="min-h-screen bg-slate-900">  
       <div className="flex flex-col items-center justify-center min-h-screen text-white px-6">
         <h1 className="text-6xl md:text-7xl font-extrabold tracking-tight">
           Home
