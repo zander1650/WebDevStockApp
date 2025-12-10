@@ -36,13 +36,13 @@ try {
  }
  finally {
   setLoading(false);
- }
+ }      
 };
 
 
   return (
     //Cool ai background :)
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-zinc-900 to-black text-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white">
   
   
   <div style={{ padding: "40px", fontFamily: "Arial, sans-serif", maxWidth: "600px", margin: "auto" }}>

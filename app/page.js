@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function a() {
   return (
-    <div className="min-h-screen bg-slate-900">  
+    <div className="min-h-screen bg-blue-900">  
       <div className="flex flex-col items-center justify-center min-h-screen text-white px-6">
         <h1 className="text-6xl md:text-7xl font-extrabold tracking-tight">
           Home
@@ -15,7 +15,7 @@ export default function a() {
         <div className="mt-12">
           <Link
             href="/StockApp"
-            className="inline-block px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white text-xl font-bold rounded-xl shadow-xl transition transform hover:scale-105"
+            className="inline-block px-8 py-4 bg-black hover:bg-black-900 text-white text-xl font-bold rounded-xl shadow-xl transition transform hover:scale-105"
           >
             Search and add stocks to homepage
           </Link>
