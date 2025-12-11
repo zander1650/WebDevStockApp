@@ -1,26 +1,26 @@
-import Link from "next/link";
+// app/page.js
+"use client";
 
-export default function a() {
-  return (
-    <div className="min-h-screen bg-blue-900">  
-      <div className="flex flex-col items-center justify-center min-h-screen text-white px-6">
-        <h1 className="text-6xl md:text-7xl font-extrabold tracking-tight">
-          Home
-        </h1>
+import { useAuth } from "./_utils/authcontent";
+import AuthPage from "./_auth/page";
+import StockApp from "./StockApp/page";
 
-        <h2 className="text-3xl md:text-4xl font-light mt-6 text-center max-w-3xl">
-          Web Dev 2 Stock app 
-        </h2>
+export default function Home() {
+  const { currentUser, loading } = useAuth();
 
-        <div className="mt-12">
-          <Link
-            href="/StockApp"
-            className="inline-block px-8 py-4 bg-black hover:bg-black-900 text-white text-xl font-bold rounded-xl shadow-xl transition transform hover:scale-105"
-          >
-            Search and add stocks to homepage
-          </Link>
+  // Show a nice loading screen while Firebase checks if user is logged in
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black flex items-center justify-center">
+        <div className="text-white text-3xl font-light animate-pulse">
+          Loading...
         </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  // Main logic: 
+  // - If user is logged in → show the Stock App
+  // - If not logged in → show Login/Signup page
+  return <>{currentUser ? <StockApp /> : <AuthPage />}</>;
 }
