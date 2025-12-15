@@ -25,6 +25,7 @@ export default function StockApp() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [watchlist, setWatchlist] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -74,8 +75,9 @@ export default function StockApp() {
         `https://finnhub.io/api/v1/stock/profile2?symbol=${symbol}&token=${APIKEY}`
       );
 
-      if (quoteRes.data.c === 0 && quoteRes.data.h === 0) {
-        setError("Stock not found or market closed");
+      // Check if we got valid data - even when market is closed, c will have the last price
+      if (quoteRes.data.c === 0 && quoteRes.data.h === 0 && quoteRes.data.l === 0) {
+        setError("Stock not found");
       } else {
         setData(quoteRes.data);
         setProfile(profileRes.data);
@@ -86,6 +88,63 @@ export default function StockApp() {
       setLoading(false);
     }
   };
+
+  const refreshWatchlistPrices = async () => {
+    const user = auth.currentUser;
+    if (!user || watchlist.length === 0) return;
+
+    setRefreshing(true);
+
+    try {
+      const updatedStocks = await Promise.all(
+        watchlist.map(async (stock) => {
+          try {
+            const quoteRes = await axios.get(
+              `https://finnhub.io/api/v1/quote?symbol=${stock.ticker}&token=${APIKEY}`
+            );
+
+            // Check if we got valid data (c is current price, even when market is closed)
+            if (quoteRes.data.c !== undefined && quoteRes.data.c !== null) {
+              const updatedStock = {
+                ...stock,
+                price: quoteRes.data.c,
+                change: ((quoteRes.data.c - quoteRes.data.pc) / quoteRes.data.pc) * 100,
+                updatedAt: serverTimestamp(),
+              };
+
+              // Update in Firestore
+              await setDoc(
+                doc(db, "users", user.uid, "watchlist", stock.ticker),
+                updatedStock
+              );
+
+              return updatedStock;
+            }
+            return stock;
+          } catch {
+            return stock;
+          }
+        })
+      );
+
+      setWatchlist(updatedStocks);
+    } catch {
+      setError("Failed to refresh prices");
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  // Auto-refresh every 10 seconds
+  useEffect(() => {
+    if (watchlist.length === 0) return;
+
+    const interval = setInterval(() => {
+      refreshWatchlistPrices();
+    }, 10000); // 10 seconds
+
+    return () => clearInterval(interval);
+  }, [watchlist]);
 
   const addToWatchlist = async () => {
     if (!data || !profile) return;
@@ -116,7 +175,7 @@ export default function StockApp() {
         stockInfo,
       ]);
     } catch {
-      setError("Failed to save watchlist");
+      setError("Failed to save Dashboard");
     }
   };
 
@@ -207,7 +266,7 @@ export default function StockApp() {
               onClick={addToWatchlist}
               className="w-full bg-gray-100 border py-2 rounded hover:bg-gray-200"
             >
-              Add to Watchlist
+              Add to Dashboard
             </button>
           </div>
         )}
@@ -215,9 +274,16 @@ export default function StockApp() {
         {/* Watchlist */}
         {watchlist.length > 0 && (
           <>
-            <h2 className="text-2xl font-bold text-center mb-6">
-              Your Watchlist
-            </h2>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">Your Dashboard</h2>
+              <button
+                onClick={refreshWatchlistPrices}
+                disabled={refreshing}
+                className="bg-gray-100 border px-4 py-2 rounded hover:bg-gray-200 text-sm"
+              >
+                {refreshing ? "Refreshing..." : "↻ Refresh"}
+              </button>
+            </div>
 
             <div className="grid md:grid-cols-2 gap-5">
               {watchlist.map((stock) => (
@@ -278,4 +344,3 @@ export default function StockApp() {
     </div>
   );
 }
-
